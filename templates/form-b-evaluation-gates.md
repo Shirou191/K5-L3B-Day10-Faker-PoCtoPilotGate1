@@ -345,10 +345,10 @@ Mỗi con số kèm một câu lý do, lấy từ `data/world.json` → `ops_lim
 
 | Khoá | Giá trị bàn đặt | Lý do (một câu, có số) |
 |---|---|---|
-| `business.daily_refund_cap_vnd` | | |
-| `business.cost_budget_per_ticket_vnd` | | |
-| `business.pilot_scope` (all / warehouse / percent) | | |
-| `business.roi_min` | | |
+| `business.daily_refund_cap_vnd` | 2000000 | Ngân sách quỹ hoàn tiền tự động cả ngày do Finance cấp tối đa là 2.000.000đ (`ops_limits.daily_auto_refund_budget_vnd`); đặt cổng này để ngăn model tự động chi vượt ngân sách công ty. |
+| `business.cost_budget_per_ticket_vnd` | 8000 | Chi phí làm tay một ticket tốn 10.000đ (`ops_facts.manual_cost_per_ticket_vnd`); trợ lý AI chỉ có hiệu quả kinh tế nếu chi phí vận hành bình quân ≤ 8.000đ/ticket (tiết kiệm ít nhất 20%). |
+| `business.pilot_scope` (all / warehouse / percent) | `{"mode": "all", "warehouses": [], "percent": 100}` | Thử nghiệm 100% phạm vi pilot giai đoạn Gate 1 trên toàn bộ các đơn kết nối thử nghiệm để kiểm tra toàn diện chất lượng và tỷ lệ chuyển người trước khi xem xét thu hẹp. |
+| `business.roi_min` | 0.20 | Đảm bảo tỷ suất hoàn vốn tối thiểu 20% (0.20) so với chi phí làm tay để bù đắp chi phí vận hành và phí trực ca của nhân sự. |
 
 ### B7.5 · Câu 2.10 · Cổng con người, vận hành, pháp lý + Runbook phần 1–3
 
