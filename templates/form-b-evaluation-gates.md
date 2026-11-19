@@ -123,24 +123,24 @@ Gợi ý: mở `data/world.json` phần `policies`, `orders[].parcels`, `ops_lim
 
 | Mục | Điền cho trợ lý hoàn tiền |
 |---|---|
-| Người dùng | |
-| Việc người dùng cần làm xong | |
-| Đầu ra của hệ thống (kể cả các lệnh ghi) | |
-| Dữ liệu trợ lý đọc lúc chạy (bảng nào trong `data/world.json`) | |
-| Trường then chốt quyết định tiền và lỗi hãng | |
-| Với mỗi trường then chốt: **nguồn sự thật** hay **bản sao** (ai cập nhật, khi nào)? | |
-| Định dạng cần để ý (ngày, trường được phép trống, đơn nhiều kiện) | |
-| Thế giới thật làm dữ liệu lệch ở đâu (theo mùa, đổi chính sách, giờ cao điểm, người nhập tay)? | |
-| Câu người ngoài sẽ hỏi về nguồn dữ liệu ("sao hệ thống biết đơn trễ mấy ngày?") | |
+| Người dùng | Khách hàng mua sắm trên sàn LogiX-VN có đơn hàng bị giao trễ gửi ticket khiếu nại yêu cầu hoàn tiền / bồi thường. |
+| Việc người dùng cần làm xong | Nhận tiền hoàn phí giao hàng (hoặc bồi hoàn voucher trễ sâu) về tài khoản nhanh chóng; hoặc nhận giải thích rõ ràng, minh bạch nếu đơn không đủ điều kiện bồi hoàn. |
+| Đầu ra của hệ thống (kể cả các lệnh ghi) | Lệnh ghi sổ cái hoàn tiền (`issue_refund`), ghi nhận phạt lỗi hãng vận chuyển (`file_carrier_fault`), gửi thông báo cho đối tác vận chuyển (`notify_carrier`), gửi tin nhắn trả lời khách hàng (`send_reply`), hoặc chuyển người duyệt (`escalate`). |
+| Dữ liệu trợ lý đọc lúc chạy (bảng nào trong `data/world.json`) | Bảng đơn hàng (`orders`), kiện hàng (`orders[].parcels`), chính sách bồi hoàn (`policies`), đối tác vận chuyển (`carriers`), danh sách duyệt đặc cách (`approvals`), định mức vận hành (`ops_limits`, `ops_facts`). |
+| Trường then chốt quyết định tiền và lỗi hãng | `parcels[].promised_date`, `parcels[].delivered_date` (tính số ngày trễ `delay_days`); `parcels[].delay_cause` (nguyên nhân trễ); `policies[].late.*`, `policies[].fault_causes`, `policies[].auto_limit_vnd`; `approvals[].status`. |
+| Với mỗi trường then chốt: **nguồn sự thật** hay **bản sao** (ai cập nhật, khi nào)? | - `parcels` (ngày giao, ngày hẹn, nguyên nhân): **Bản sao** lấy qua tracking DB; **nguồn sự thật** là máy quét mã vạch của bưu tá tại trạm/điểm phát khi giao hàng.<br>- `policies`: **Nguồn sự thật** là quyết định ban hành văn bản chính sách của Giám đốc Vận hành & Kế toán trưởng LogiX.<br>- `approvals`: **Nguồn sự thật** là cấp quản lý (`staff`) phê duyệt trên hệ thống nội bộ. |
+| Định dạng cần để ý (ngày, trường được phép trống, đơn nhiều kiện) | Định dạng ngày chuẩn ISO `YYYY-MM-DD` (tránh nhầm lẫn ngày/tháng); trường `delivered_date` được phép trống (`null`) nếu kiện hàng đang trên đường giao; một đơn hàng có thể có nhiều kiện (`parcels`) do các hãng vận chuyển khác nhau phụ trách với ngày giao và trạng thái khác nhau. |
+| Thế giới thật làm dữ liệu lệch ở đâu (theo mùa, đổi chính sách, giờ cao điểm, người nhập tay)? | (1) Bưu tá giao xong không bấm quét máy ngay mà cuối ngày về bưu cục mới quét dồn làm lệch ngày giao thật; (2) Mùa mưa bão/cao điểm Tết: bưu tá tick bừa nguyên nhân trễ là do hãng (`CARRIER`) thay vì bất khả kháng (`FORCE_MAJEURE`) hoặc ngược lại; (3) Khách tự khai số ngày trễ khống trong ticket (`T-002@55`); (4) Hết hạn chính sách cũ sang chính sách mới (`REFUND-v3` sang `REFUND-v4`). |
+| Câu người ngoài sẽ hỏi về nguồn dữ liệu ("sao hệ thống biết đơn trễ mấy ngày?") | "Hệ thống căn cứ vào đâu để xác định đơn bị trễ mấy ngày? Lấy theo lời khai trong khiếu nại của khách hay theo dữ liệu quét mã bưu tá trên hệ thống tracking DB?" |
 
 **Tóm lại (điền vào chỗ trống):**
-Trợ lý dùng `__________`, `__________`, `__________` để giúp `__________` làm được `__________`.
-Trường mà nếu sai thì tiền hoặc lỗi hãng sai theo: `__________`, `__________`.
-Chúng tôi biết thế giới thật sẽ làm dữ liệu lệch ở: `__________`. Dấu hiệu nhìn thấy sớm nhất: `__________`.
+Trợ lý dùng `orders[].parcels (tracking DB)`, `policies (bảng chính sách)`, `approvals (phê duyệt đặc cách)` để giúp `khách hàng có đơn trễ` làm được `nhận tiền bồi hoàn giao trễ tự động, chính xác trong vài phút`.
+Trường mà nếu sai thì tiền hoặc lỗi hãng sai theo: `parcels[].delay_cause`, `parcels[].delivered_date` (và `policies[].fault_causes`).
+Chúng tôi biết thế giới thật sẽ làm dữ liệu lệch ở: `bưu tá quét bù mã giao hàng muộn và việc chuyển giao chính sách REFUND-v4 vào ngày 2026-12-01`. Dấu hiệu nhìn thấy sớm nhất: `tỉ lệ lỗi hãng tăng đột biến và có khiếu nại đối soát từ phía đối tác vận chuyển`.
 
-**Ví dụ drift trong 3 tháng tới** (lấy từ dòng "thế giới thật làm dữ liệu lệch"): cái gì đổi `____` · đổi ngày nào `____` ·
-trường nào cho thấy `____` · con số nào của Bản tiêu chí bị ảnh hưởng `____`.
-Đây là đầu vào đổi hay quan hệ vào–ra đổi? Chỉ số nào sẽ phát hiện? `__________`
+**Ví dụ drift trong 3 tháng tới** (lấy từ dòng "thế giới thật làm dữ liệu lệch"): cái gì đổi `Đổi phiên bản chính sách bồi hoàn từ REFUND-v3 sang REFUND-v4` · đổi ngày nào `2026-12-01` ·
+trường nào cho thấy `policies[].effective_from, policies[].auto_limit_vnd (giảm 200.000đ -> 100.000đ), policies[].fault_causes (bỏ FORCE_MAJEURE)` · con số nào của Bản tiêu chí bị ảnh hưởng `wrongful_carrier_faults_max (tăng nếu phạt hãng ca bất khả kháng), wrongful_refund_vnd_max, escalation_rate_max (tăng do hạ trần tự động)`.
+Đây là đầu vào đổi hay quan hệ vào–ra đổi? Chỉ số nào sẽ phát hiện? `Quan hệ vào-ra đổi (concept drift: cùng đầu vào trễ do bão lũ, tháng 11 ghi lỗi hãng, tháng 12 cấm ghi lỗi hãng). Phát hiện bằng: offline metric dùng sai phiên bản chính sách (Câu 1.3) và telemetry production đếm lỗi hãng không khớp chính sách theo ngày (Câu 1.4).`
 
 **Ví dụ một dòng (đừng chép):** trường then chốt `parcels[].delivered_date` · bản ghi do máy quét ở điểm phát tạo ra, là nguồn
 sự thật về ngày giao · lệch khi điểm phát quét sót hoặc nhập bù bằng tay.
