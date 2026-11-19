@@ -14,8 +14,8 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
 |   1 | Phan Đào Minh Quân | 2A202603971 | Kỹ sư cổng | ✔ |
-|   2 |           |      |     |             |
-|   3 |           |      |     |             |
+|   2 | Trần Quang Hà | 2A202603962 | Sản phẩm và kinh doanh |   |
+|   3 | Bùi Quý Anh |  | Vận hành và pháp lý |   |
 |   4 |           |      |     |             |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
@@ -55,6 +55,35 @@ Học được: Đánh giá một hệ thống AI phải đặt luật trước,
 
 
 Chưa chắc: Kết quả trên dữ liệu giả có còn đúng khi chạy thật không, và làm sao đo được những thứ như lòng tin của người dùng.
+
+## TranQuangHa-2A202603962
+
+### Phần việc phụ trách
+
+Vai **Sản phẩm và kinh doanh**.
+- Khối 1: Câu 1.1, 1.2 (mục tiêu hệ thống Phiếu A mục A1), Câu 1.3, 1.4 (thước đo offline/online A2), Câu 1.5 (khoảng tin cậy A3), Câu 1.6 (câu tiêu chí A4); chốt và ký bản tiêu chí `config/acceptance_criteria.json`.
+- Khối 2: Câu 2.3 (Phiếu B mục B3: bản đồ dữ liệu và phân tích drift chuyển đổi chính sách REFUND-v3 sang v4), Câu 2.9 (Phiếu B mục B7.4: thiết lập cổng tài chính trong `config/operating_gates.json`), tham gia Pre-mortem B6; đồng thuận Quyết định Gate 1 v1 (B8).
+- Khối 3: Câu 3.2 (Phiếu C mục C5: xây dựng 4 điều kiện đặc tả hợp lệ của `approval_id` xử lý triệt để sự cố S8), chủ trì Quyết định Gate 1 v2 và 3 dòng bắt buộc (C12).
+File: `config/acceptance_criteria.json`, `config/operating_gates.json` (mục `business`), `templates/form-a-criteria.md`, `templates/form-b-evaluation-gates.md`, `templates/form-c-incident.md`.
+
+### Đóng góp cụ thể
+
+- Xây dựng bản tiêu chí chấp nhận Gate 1 với 5 chỉ số an toàn bắt buộc và 1 chỉ số nên có; đặt điều kiện dừng nghiêm ngặt bảo vệ quyền lợi khách hàng và uy tín pháp lý.
+- Phân tích rủi ro trôi dạt phân phối (distribution drift) khi hệ sinh thái thay đổi chính sách từ 01/12, chỉ ra lỗi agent dựa vào cờ `index_active` và đề xuất cơ chế ghim chính sách theo ngày hiệu lực.
+- Thiết lập các cổng kinh doanh trong `config/operating_gates.json`: trần chi hoàn tự động ngày 2.000.000đ, ngân sách xử lý tối đa 8.000đ/ticket, phạm vi thử nghiệm 100%, bảo đảm ROI tối thiểu 0.20 (kết quả thực tế sau sửa đạt 2.39).
+- Viết đặc tả kỹ thuật 4 điều kiện kiểm tra mã duyệt (`approval_id` còn hạn, đúng ticket, đúng trạng thái `valid`, đủ hạn mức `max_vnd`) giúp loại bỏ hoàn toàn 5 ca dùng mã sai, khôi phục niềm tin của trưởng ca CSKH (kiểm tay 100% giảm về kiểm mẫu 10%, xóa sạch 36 ca ùn tắc).
+
+### Bằng chứng
+
+- Commit: `8cffcee` (`Sign acceptance criteria`), `1e1160a` (Phiếu B mục B3 dữ liệu và drift), `da37c6d` (Phiếu B B7.4 và cổng kinh doanh), `1d0ca5a` (Phiếu C C5 specification cho S8).
+- Lần chạy: `runs/R-base-before-20261119-154243-bde05c`, `runs/R-base-prepared-20261119-164242-adb4d3`, `runs/R-S8-after-20261119-170659-5df4a6`, `runs/R-S8-grade-20261119-171014-69c5f7.json` (PASS-VISIBLE).
+- Phiếu: Form A (A1–A5), Form B (B3, B7.4, B8), Form C (C5 mục 3.2, C12).
+
+### Exit ticket
+
+Học được: Thiết kế an toàn cho hệ thống AI phải kết hợp chặt chẽ giữa logic kỹ thuật và ràng buộc tài chính/vận hành (guardrails bên ngoài model). Việc định lượng bằng specification rõ ràng là chìa khóa để khôi phục niềm tin của người vận hành.
+
+Chưa chắc: Trong môi trường production thực tế, các dạng gian lận chia nhỏ giao dịch hoặc lạm dụng mã phê duyệt có thể biến thiên phức tạp hơn nhiều so với bộ dữ liệu giả lập (mock data).
 
 ## HoVaTen-MSSV
 
