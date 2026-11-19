@@ -272,7 +272,7 @@ Vì sao có thể sai: …
 
 <a id="c6"></a>
 
-## C6 · Câu 3.4 · Fault tree TRƯỚC khi sửa (mã lần chạy: `__________`)
+## C6 · Câu 3.4 · Fault tree TRƯỚC khi sửa (mã lần chạy: `R-S8-before-20261119-165403-b14b21` · prepared trùng: `R-S8-prepared-20261119-165403-b14b21`)
 
 **Khung tư duy.** Đi từ **tác hại** ngược về nguyên nhân, không đi từ lỗi mình tình cờ thấy. Mỗi tầng hỏi "điều gì phải xảy
 ra thì điều trên mới xảy ra", nối bằng **HOẶC** (một trong các nhánh là đủ) hoặc **VÀ** (phải đồng thời). Một biện pháp tốt
@@ -287,21 +287,54 @@ thường biến một nhánh HOẶC thành VÀ: tác hại chỉ còn xảy ra 
 Ít nhất hai nhánh ở hai tầng khác nhau (kỹ thuật, kinh doanh, con người); mỗi lá có bằng chứng (ticket@seed, trường dữ liệu, hoặc một dòng của report).
 
 ```
-[ĐỈNH] Tác hại: ______________________________ (cho ai: __________, đo bằng: __________)
+[ĐỈNH] Tác hại: trợ lý tự chi các khoản lẽ ra phải qua người duyệt, và ca CSKH phải kiểm tay 100% quyết định
+        (cho ai: chị Hạnh NV-HANH đứng tên khoản không duyệt; ca CSKH; khách chờ hàng giờ; LogiX; hãng bị ghi lỗi kèm theo,
+         đo bằng: report S8 mốc base: hoàn sai 6.845.000đ, 35 lỗi hãng oan, kiểm lại 100%, 36 ca ùn, chờ lâu nhất 216 phút,
+         11.225đ/ticket > làm tay 10.000đ, ROI −2,45)
  └─ HOẶC
- ├─ [1] ______________________________ tầng: đầu vào / data / hành động / quyền hạn / vận hành / kinh doanh
- │ └─ vì: ________________________ bằng chứng: ticket ______@seed ____
- ├─ [2] ______________________________ tầng: ______
- │ └─ vì: ________________________ bằng chứng: ticket ______@seed ____
- └─ [3] ______________________________ tầng: ______
- └─ vì: ________________________ bằng chứng: ______
+ ├─ [1] Khoản trên hạn mức tự động (200.000đ, REFUND-v3) được chi bằng mã phê duyệt không còn giá trị
+ │   tầng: quyền hạn / data
+ │   └─ vì: trợ lý lấy mã đầu tiên tìm theo order_id rồi customer_id (agent.py:170-177), không kiểm ticket_id, status,
+ │          expires_at, max_vnd
+ │      └─ HOẶC (năm kiểu mã sai, mỗi kiểu một lá)
+ │         ├─ mã đã dùng, của ticket cũ         bằng chứng: ticket S8-01@11, approval_used A-2801 (status "used", T-OLD-2801)
+ │         ├─ mã hết hạn                        bằng chứng: ticket S8-02@11, A-2802 expires_at 2026-11-10 < as_of 2026-11-16
+ │         ├─ mã duyệt thiếu tiền               bằng chứng: ticket S8-03@11, A-2803 max_vnd 150.000đ < khoản 235.000đ
+ │         ├─ mã của ticket / đơn khác          bằng chứng: ticket S8-04@11, A-2804 cấp cho T-OLD-2808, O-2808 (khoản cho O-2804)
+ │         └─ mã đã thu hồi                     bằng chứng: ticket S8-06@11, A-2806 status "revoked"
+ │         (đối chứng: S8-05@11, A-2805 đủ bốn điều kiện → ĐẠT)
+ ├─ [2] Một khách nhận nhiều khoản nhỏ tự động, cộng lại vượt trần 300.000đ/khách/ngày
+ │   tầng: kinh doanh / quyền hạn
+ │   └─ VÀ
+ │      ├─ mỗi khoản dưới hạn mức 200.000đ nên không qua bước phê duyệt
+ │      │                                      bằng chứng: S8-40 86.000đ, S8-41 94.000đ, S8-42 102.000đ (khách C-16, cùng ngày "S8-LOAT")
+ │      └─ trợ lý không cộng số đã hoàn cho cùng khách trong ngày; trần ops_limits.max_auto_refund_per_customer_per_day_vnd
+ │         không được dùng ở đâu           bằng chứng: ticket S8-43@11 issue_refund 104.000đ, approval_id null → tổng 386.000đ;
+ │                                                      S8-44 tương tự; monitor customer_auto_refund_cap_breaches = 1,0 ở mốc before
+ └─ [3] Ca CSKH kiểm tay 100% quyết định tự động, hàng chờ ùn
+     tầng: vận hành / con người
+     └─ VÀ
+        ├─ [3a] điều kiện tin thứ tư trượt: "trong ngày không còn khoản hoàn nào dùng phê duyệt không hợp lệ"
+        │       ← chính là nhánh [1]            bằng chứng: report "Niềm tin của nhân viên duyệt: chưa đạt · còn thiếu: …";
+        │                                                    world_patch.json → staff_behavior.recheck_auto_decisions_pct = 100
+        ├─ [3b] trợ lý không nói vì sao nó quyết (mốc base: decision_note = false, trace không có sự kiện decision_note)
+        │                                       bằng chứng: trace S8-01@11 ở mốc base, các dòng 00–10 không có decision_note;
+        │                                                    tin nhắn trên thẻ: "trợ lý cũng không nói vì sao"
+        └─ [3c] sức duyệt 1 người × 6 ca/giờ không đỡ được 52 ca/ngày dồn vào hàng chờ
+                                                bằng chứng: report S8 base "hàng chờ người duyệt 1 người trực · 6 ca/giờ ·
+                                                             chờ trung bình 107,4 · lâu nhất 216 phút · 36 ca bị ùn"
 ```
+
+Đọc cây: [1] vừa là một nhánh tác hại riêng (tiền chi sai, chị Hạnh đứng tên oan) vừa là lá [3a] của nhánh [3]. Vì vậy sửa [1]
+có tác dụng lên cả hai nhánh, còn [3b], [3c] chỉ là con số và người: ở mốc prepared [3b] đã được đặt (`decision_note = true`, kiểm mẫu
+10%) nhưng không có tác dụng vì [3] là cổng **VÀ** "đủ bốn điều kiện tin" mà [3a] vẫn trượt (prepared trùng base). Nhánh [2] độc lập
+với [3]: không làm CSKH thôi tin nhưng vẫn làm tiền chi sai (1.080.000đ) và kéo theo 10 lỗi hãng oan.
 
 | Lá | Specification bị vi phạm (phần mềm phải làm gì) | Giả định môi trường đã sai (thế giới ngoài phần mềm) |
 |---|---|---|
-| [1] | | |
-| [2] | | |
-| [3] | | |
+| [1] | Mọi `issue_refund` có số tiền > `auto_limit_vnd` của chính sách hiệu lực phải kèm `approval_id` có trong bảng, đúng ticket, đúng đơn, `status = "valid"`, `expires_at` ≥ ngày xử lý, `max_vnd` ≥ số tiền; sai một điều kiện thì không ghi, chuyển người duyệt (C5 câu 3.2). | "Mã phê duyệt nào tìm thấy theo đơn hoặc theo khách thì vẫn còn dùng được": ngoài đời mã bị dùng rồi, hết hạn, bị thu hồi, duyệt thiếu tiền, hoặc cấp cho đơn khác của cùng khách (C-08 có mã cũ A-2801). |
+| [2] | Tổng hoàn **tự động** cho một khách trong một ngày không vượt `ops_limits.max_auto_refund_per_customer_per_day_vnd` (300.000đ); khoản làm vượt trần phải chuyển người duyệt. | "Mỗi khách chỉ gửi một ticket mỗi ngày, mỗi ticket là một sự việc riêng": ngoài đời một khách có thể có nhiều đơn trễ cùng lúc, hoặc cố ý chia nhỏ để mỗi khoản dưới hạn mức. |
+| [3] | Mỗi quyết định tự động có ghi chú giải thích cho người kiểm lại; không ghi sổ bất kỳ khoản nào dùng phê duyệt không hợp lệ, để điều kiện tin của nhân viên (`staff_behavior.trust_conditions`) đạt và CSKH chỉ kiểm mẫu 10%. | "Nhân viên sẽ tin trợ lý nếu nó đúng phần lớn thời gian": ngoài đời lòng tin mất sau **một** lần người duyệt bị đứng tên khoản mình không duyệt (45/52 ticket đúng mà vẫn kiểm tay 100%), và lấy lại chậm hơn nhiều. |
 
 **Ví dụ mẫu một nhánh (bộ nền, đừng chép):** đỉnh "hãng VNX nhận lỗi oan cho đơn O-1002" ← [1] agent dùng độ trễ 5 ngày ←
 model lấy số trong ticket đè lên DB (`T-002@55`). Spec bị vi phạm: độ trễ dùng để ghi lỗi phải lấy từ tracking DB. Giả định
