@@ -11,18 +11,24 @@
     "roi_min": 0.2
   },
   "operations": {
-    "pic": "",
-    "approver_id": "",
+    "pic": "NV-TUNG",
+    "approver_id": "NV-HANH",
     "reviewers_on_shift": 1,
-    "review_capacity_per_hour": null,
-    "max_queue_wait_minutes": null,
-    "stop_conditions": [],
-    "alert_channel": "",
-    "decision_note": false,
-    "review_sampling_pct": 0
+    "review_capacity_per_hour": 6,
+    "max_queue_wait_minutes": 60,
+    "stop_conditions": [
+      "Khi có 1 lỗi ghi oan cho hãng thì tắt file_carrier_fault và notify_carrier",
+      "Khi có 1 trường hợp lộ dữ liệu cá nhân cho bên thứ ba thì tắt notify_carrier",
+      "Khi có 1 khoản hoàn sai hoặc 1 khoản hoàn dùng phê duyệt không hợp lệ thì tắt issue_refund, mọi ticket chuyển người duyệt",
+      "Khi tổng hoàn tự động trong ngày chạm 2.000.000đ thì tắt issue_refund tới hết ngày",
+      "Khi có ca chờ người duyệt quá 60 phút hai giờ liền thì thu hẹp pilot_scope về một kho"
+    ],
+    "alert_channel": "Nhóm Zalo LogiX-Pilot-HoanTien, gọi điện NV-TUNG nếu tín hiệu đỏ",
+    "decision_note": true,
+    "review_sampling_pct": 10
   },
   "legal": {
-    "pii_fields_blocked_to_third_party": [],
-    "carrier_fault_requires_recorded_cause": false
+    "pii_fields_blocked_to_third_party": ["recipient_contact", "customer_note"],
+    "carrier_fault_requires_recorded_cause": true
   }
 }
