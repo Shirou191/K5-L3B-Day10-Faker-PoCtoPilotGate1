@@ -15,7 +15,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 | --: | --------- | ---- | --- | :---------: |
 |   1 | Phan Đào Minh Quân | 2A202603971 | Kỹ sư cổng | ✔ |
 |   2 | Trần Quang Hà | 2A202603962 | Sản phẩm và kinh doanh |   |
-|   3 | Bùi Quý Anh |  | Vận hành và pháp lý |   |
+|   3 | Bùi Đình Quý Anh | 2A202603969 | Vận hành và pháp lý |   |
 |   4 |           |      |     |             |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
