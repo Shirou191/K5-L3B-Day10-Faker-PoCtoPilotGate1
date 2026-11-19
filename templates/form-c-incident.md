@@ -1,6 +1,6 @@
 # Phiếu C · Sự cố và quyết định v2 · Khối 3 (phút 125–200)
 
-**Bàn:** ______ · **Thẻ đã bốc:** ___ *(để trống tới phút 125; bốc số xong thì ghi đúng số đó, ví dụ `S3`. Lab Coach đối chiếu với sổ; lệnh tự kiểm tra in dòng này trong report.)*
+**Bàn:** K5-L3B-Day10-Faker-PoC-to-Pilot_Gate1_student · **Thẻ đã bốc:** S8 *(để trống tới phút 125; bốc số xong thì ghi đúng số đó, ví dụ `S3`. Lab Coach đối chiếu với sổ; lệnh tự kiểm tra in dòng này trong report.)*
 
 Mở `incidents/Sx/card.md` của đúng số đã bốc. Các bước trên thẻ trỏ về đúng mục trong phiếu này. Mục C3 chỉ điền phần ứng với
 số thẻ của bàn; các phần khác để trống.
@@ -30,7 +30,8 @@ Mỗi lệnh `lab10.eval` và `lab10.grade` tự ghi một dòng vào `runs/jour
 
 | # | Mã lần chạy | Bộ ticket · mốc | Đổi MỘT thứ gì so với lần trước | pass_rate (khoảng tin cậy 95%) | pass_k | Hoàn sai (đ) · lỗi hãng oan · lộ dữ liệu | Tỉ lệ chuyển người | Kết luận (một câu) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | | Sx · prepared | nhận thẻ đã bốc, chưa sửa thêm (đúng cổng vòng 1 đã chốt) | | | | | |
+| 0 | `R-S8-grade-20261119-165333-b14b21` | S8 · grade | (lần tự kiểm tra đầu) | 0.8654 [0.7692; 0.9423] | 0.8654 | 6.845.000 · 35 · 0 | 0.0 (vào hàng chờ 100%) | `1 integrity ❌`: Git trên Windows đổi xuống dòng LF→CRLF ở 19 file bị khoá (nội dung không đổi); đã khôi phục đúng byte theo `lab10/MANIFEST.json` và chạy lại ở dòng 1. |
+| 1 | `R-S8-prepared-20261119-165403-b14b21` (trong grade `R-S8-grade-20261119-165402-b14b21`) | S8 · prepared | nhận thẻ đã bốc, chưa sửa thêm (đúng cổng vòng 1 đã chốt) | 0.8654 [0.7692; 0.9423] | 0.8654 | 6.845.000 · 35 · 0 | 0.0 (vào hàng chờ 100%) | Prepared **giống hệt base**: cổng vòng 1 không đỡ được ô nào; 7 ticket hỏng (`S8-01`, `02`, `03`, `04`, `06`, `43`, `44`), 36 ca ùn, ROI −2,44. |
 | 2 | | Sx · after | | | | | | |
 | 3 | | Sx · after | | | | | | |
 | 4 | | base · after | (kiểm không regression) | | | | | |
@@ -47,19 +48,24 @@ Chạy **trước khi sửa bất cứ thứ gì**:
 python3 -m lab10.grade --incident Sx
 ```
 
-- Mã lần chạy grade: `__________` · base: `__________` · prepared: `__________`
-- Cổng vòng 1 đỡ được ô / con số nào (so cột base với cột prepared): …
-- Khối kinh doanh và vận hành còn dòng nào vượt trần: …
+- Mã lần chạy grade: `R-S8-grade-20261119-165402-b14b21` · base: `R-S8-before-20261119-165403-b14b21` · prepared: `R-S8-prepared-20261119-165403-b14b21`
+  (lần grade trước đó `R-S8-grade-20261119-165333-b14b21` báo `1 integrity ❌` chỉ vì ký tự xuống dòng CRLF; xem C0 dòng 0). Kiểm: integrity ✅ · criteria ✅ (hash `7401f631`) · prepared đã chốt `f838c08a`, còn nguyên · regression ✅ · visible ❌ · monitor ❌ (chưa có chỉ số mới).
+- Cổng vòng 1 đỡ được ô / con số nào (so cột base với cột prepared): **không ô nào**. Trên gói S8 (52 ticket × 5 seed = 260 lần chạy), base và prepared trùng nhau: `pass_rate` 0,8654 [0,7692; 0,9423], hoàn sai 6.845.000đ, 35 lỗi hãng oan, 0 lộ dữ liệu, 36 ca ùn, chờ lâu nhất 216 phút, chi phí 11.225 → 11.325đ/ticket (tăng 100đ vì `decision_note`), ROI −2,45 → −2,44. Lý do: cổng 2 (`issue_refund`) chỉ so số tiền với mức được hưởng, **không kiểm `approval_id`**, nên các khoản trên hạn mức dùng mã duyệt sai vẫn đi qua; config vòng 1 đã đặt đúng 3/4 điều kiện tin của nhân viên (`decision_note = true`, kiểm mẫu 10%, `approver_id = NV-HANH`) nhưng report báo "Niềm tin của nhân viên duyệt: **chưa đạt** · còn thiếu: trong ngày vẫn có khoản hoàn dùng phê duyệt không hợp lệ", nên CSKH vẫn kiểm lại 100%.
+- Khối kinh doanh và vận hành còn dòng nào vượt trần: hàng chờ 36 ca ùn; chờ lâu nhất 216 phút > 60; chi phí 11.325đ/ticket > làm tay 10.000đ (cả 4 kho CT, DN, HCM, HN đều > làm tay); ROI −2,44 < 0,2. Ngưỡng đã ký chưa đạt: `pass_rate`, `pass_k`, hoàn sai, lỗi hãng oan, chi phí, ROI, ca ùn. Report: "KHÔNG đủ căn cứ để chọn 'Tiếp tục'".
 
 **Mở lại pre-mortem (Phiếu B mục B6), viết bằng bút khác màu.** Với thẻ S1, S3, S4, S5 đây là một phần của phần riêng theo thẻ.
 
-- Sự cố trên thẻ thuộc lăng kính nào (kỹ thuật, kinh doanh, con người và vận hành, pháp lý)? …
-- Có nằm trong các lý do bàn đã viết không? Nếu có: cổng vòng 1 đã đỡ được bao nhiêu (đọc cột prepared trong report)? Nếu không: vì sao cả bàn không nghĩ tới? …
+- Sự cố trên thẻ thuộc lăng kính nào (kỹ thuật, kinh doanh, con người và vận hành, pháp lý)? **Con người và vận hành** là chính (CSKH thôi tin, kiểm tay 100%, hàng chờ ùn), gốc ở **kỹ thuật** (trợ lý dùng mã phê duyệt không hợp lệ: của ticket khác, hết hạn, đã thu hồi, vượt `max_vnd`), hệ quả ở **kinh doanh** (chi phí > làm tay, ROI âm) và **pháp lý** (35 lỗi ghi cho hãng theo các khoản hoàn lẽ ra phải chuyển người; trưởng ca đứng tên khoản mình không duyệt).
+- Có nằm trong các lý do bàn đã viết không? Nếu có: cổng vòng 1 đã đỡ được bao nhiêu (đọc cột prepared trong report)? Nếu không: vì sao cả bàn không nghĩ tới? **Có, một phần.** B6 **P6** ("nhân viên CSKH không tin trợ lý nên tự kiểm lại tay 100% … trợ lý dùng mã phê duyệt cũ A-0031 đứng tên chị Hạnh là mất lòng tin hẳn") và B4 dòng ngoài kỹ thuật "Người đứng tên duyệt · INVALID". Nhưng P6 **không được chọn làm cổng ★**: bàn chỉ đặt các con số trong config (B7.5), và để "kiểm phê duyệt không hợp lệ" ở ô **Chưa** (B5 dòng 4, Risk register). Cột prepared cho thấy cổng vòng 1 đỡ được **0**: điều kiện tin của nhân viên là "đủ cả bốn hoặc không", thiếu một điều kiện kỹ thuật thì ba con số config không có tác dụng.
+
+*Ghi chú về thứ tự: commit `899a640 Nhận thẻ S8` nằm trước commit chốt vòng 1 `e08eb26` (checkpoint `f838c08a`). Bàn xác nhận: nội dung thẻ ________ (có / không) được đọc trước khi chốt.*
 - Lý do còn thiếu, thêm bây giờ:
 
 | Lý do thất bại (viết ở thì quá khứ) | Lăng kính | Kiểm được bằng gì (trace / data / config nào) |
 |---|---|---|
-| | | |
+| Trợ lý lấy mã phê duyệt đầu tiên tìm được theo đơn hoặc theo khách (`agent.py:170-177`) mà không kiểm đúng ticket, `status`, `expires_at`, `max_vnd`; các khoản trên 200.000đ mang tên chị Hạnh dù chị không duyệt. | Kỹ thuật | Trace sự kiện `approval_used` đối chiếu `incidents/S8/world_patch.json` → `approvals` (A-2801 `used`, A-2802 hết hạn 10/11, A-2803 `max_vnd` 150.000đ, A-2804 của ticket khác, A-2806 `revoked`) |
+| Lòng tin của CSKH là "đủ bốn điều kiện hoặc không": chỉ một khoản dùng phê duyệt sai trong ngày là cả ca kiểm tay 100%, 52 ca/ngày vào hàng chờ của 1 người 6 ca/giờ, chi phí 11.325đ/ticket > làm tay, ROI −2,44. | Kinh doanh / Con người và vận hành | Report S8 khối kinh doanh và vận hành; `world_patch.json` → `staff_behavior.recheck_auto_decisions_pct = 100`, `trust_conditions`; dòng "Niềm tin của nhân viên duyệt" |
+| Một khoản hoàn lẽ ra phải chuyển người vẫn được ghi, kéo theo ghi lỗi và gửi thông báo cho hãng (35 lỗi oan trên gói S8), vì `do_fault` chỉ phụ thuộc số tiền > 0. | Pháp lý | Report S8 `wrongful_carrier_faults = 35`; bảng theo hãng (DNB 10, GHSH 5, …) |
 
 ---
 
