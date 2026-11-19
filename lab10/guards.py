@@ -97,10 +97,60 @@ def _gate_refund(ctx, action):
     if due == 0 and amount > 0:
         return Verdict.deny(f"theo tracking trễ {delay} ngày, nguyên nhân {parcel.get('delay_cause')}, "
                             f"chính sách {pol['policy_id']}: không đủ điều kiện hoàn")
+    final = min(amount, due)
+
+    # VÒNG 2 (thẻ S8) · (e) khoản trên hạn mức tự động phải có phê duyệt CÒN GIÁ TRỊ cho đúng khoản này
+    if final > pol["auto_limit_vnd"]:
+        why = _approval_problem(ctx, action, final)
+        if why:
+            return Verdict.escalate(f"khoản {final}đ vượt hạn mức tự động {pol['auto_limit_vnd']}đ "
+                                    f"({pol['policy_id']}) nhưng phê duyệt không hợp lệ: {why}; chuyển người duyệt")
+    else:
+        # VÒNG 2 (thẻ S8) · (f) trần hoàn TỰ ĐỘNG cho một khách trong ngày (ops_limits, đã thống nhất với Ops/Finance)
+        cap = ctx.tools.ops_limits().get("max_auto_refund_per_customer_per_day_vnd")
+        cust = order.get("customer_id")
+        if cap is not None:
+            today = _auto_refunded_today_for(ctx, cust)
+            if today + final > cap:
+                return Verdict.escalate(f"khách {cust} đã được hoàn tự động {today}đ hôm nay; thêm {final}đ "
+                                        f"vượt trần {cap}đ/khách/ngày; chuyển người duyệt")
+
     if amount > due:
         return Verdict.modify(f"hạ tiền hoàn về mức được hưởng theo tracking ({due}đ, đề xuất {amount}đ)",
                               amount_vnd=due)
     return Verdict.allow()
+
+
+def _approval_problem(ctx, action, amount):
+    """Lý do phê duyệt KHÔNG dùng được cho khoản này, hoặc "" nếu hợp lệ.
+    Hợp lệ = có mã · đúng ticket (nếu mã ghi ticket) · đúng đơn · status 'valid' · chưa hết hạn · max_vnd đủ."""
+    aid = action.get("approval_id")
+    if not aid:
+        return "không có mã phê duyệt"
+    rows = ctx.tools.lookup_approvals(approval_id=aid)
+    if not rows:
+        return f"mã {aid} không có trong bảng phê duyệt"
+    a = rows[0]
+    if a.get("ticket_id") and a["ticket_id"] != action.get("ticket_id"):
+        return f"mã {aid} cấp cho ticket khác ({a['ticket_id']})"
+    if a.get("order_id") and a["order_id"] != action.get("order_id"):
+        return f"mã {aid} cấp cho đơn khác ({a['order_id']})"
+    if a.get("status") != "valid":
+        return f"mã {aid} ở trạng thái '{a.get('status')}'"
+    if a.get("expires_at") and H.d(a["expires_at"]) < H.d(ctx.as_of):
+        return f"mã {aid} đã hết hạn ngày {a['expires_at']}"
+    if int(a.get("max_vnd") or 0) < amount:
+        return f"mã {aid} chỉ duyệt tới {a.get('max_vnd')}đ, khoản chi {amount}đ"
+    return ""
+
+
+def _auto_refunded_today_for(ctx, customer_id):
+    """Tổng đã hoàn TỰ ĐỘNG (không có approval_id) cho một khách trong ngày giả lập.
+    Bỏ các dòng sổ cái có sẵn từ trước hôm nay (ledger_seed), giống cách tools.auto_refund_today_vnd đếm."""
+    rows = ctx.tools.ledger_rows()
+    before_today = getattr(getattr(ctx.tools, "_w", None), "seed_rows", 0)
+    return sum(int(r.get("amount_vnd") or 0) for r in rows[before_today:]
+               if r.get("customer_id") == customer_id and not r.get("approval_id"))
 
 
 # ---------- CỔNG 3 · file_carrier_fault ----------
