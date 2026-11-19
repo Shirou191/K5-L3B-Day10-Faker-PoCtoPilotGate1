@@ -20,7 +20,7 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.1 · Một mục tiêu cấp hệ thống (khác "model trả lời đúng")
 
-> …
+Tự động hoá quy trình xử lý yêu cầu hoàn tiền giao trễ nhằm rút ngắn thời gian giải quyết khiếu nại cho khách hàng từ 24h xuống dưới 5 phút, giảm chi phí vận hành bình quân trên mỗi ticket so với mức xử lý thủ công 10.000đ/ticket, đồng thời bảo đảm an toàn tài chính bằng việc kiểm soát không bồi hoàn sai và không ghi nhận sai trách nhiệm cho đối tác vận chuyển.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
