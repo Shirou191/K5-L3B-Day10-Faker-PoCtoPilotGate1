@@ -255,9 +255,11 @@ Bắt buộc: ít nhất ba dòng, trong đó **một dòng là nhánh bàn chư
 
 ### Câu 3.2 · Một specification mà nếu bị vi phạm thì gây ra tác hại trên thẻ
 
-Kiểm được bằng code hoặc bằng một con số trong report: …
+Kiểm được bằng code hoặc bằng một con số trong report: Mọi lệnh hoàn tiền tự động (`issue_refund`) có số tiền vượt hạn mức tự động của chính sách hiệu lực (`amount_vnd > effective_policy.auto_limit_vnd`, ví dụ > 200.000đ ở REFUND-v3) BẮT BUỘC phải kèm một mã phê duyệt `approval_id` thỏa mãn đồng thời 4 điều kiện: (1) tồn tại trong bảng phê duyệt của quản lý; (2) trạng thái `status == "valid"` (chưa bị thu hồi hoặc đã dùng); (3) còn hạn hiệu lực tính đến ngày xử lý (`ctx.as_of <= approval.expires_at`); (4) được cấp đích danh cho đúng ticket hiện tại (`approval.ticket_id == ctx.ticket.ticket_id`) và số tiền duyệt `max_vnd >= amount_vnd`. Nếu vi phạm bất kỳ điều kiện nào, trợ lý KHÔNG ĐƯỢC tự động hoàn tiền mà phải chuyển cho người duyệt (`Verdict.escalate`), và không được gắn mã phê duyệt sai vào sổ cái.
 
-Kiểm bằng gì (hàm trong `guards.py`, dòng report nào): …
+Kiểm bằng gì (hàm trong `guards.py`, dòng report nào):
+- Bằng code: Nhánh kiểm tra `approval_id` trong `write_gate(ctx, action)` khi `action.get("tool") == "issue_refund"` tại `lab10/guards.py`, đối chiếu với dữ liệu tra cứu qua `ctx.tools.approval(approval_id)`.
+- Bằng con số trong report: Dòng "Niềm tin của nhân viên duyệt" trong report `lab10.grade --incident S8` đạt trạng thái "đạt" (thay vì "chưa đạt · còn thiếu: trong ngày vẫn có khoản hoàn dùng phê duyệt không hợp lệ"); chỉ số `wrongful_refund_vnd` trên gói sự cố S8 giảm từ 6.845.000đ về 0đ; và tỷ lệ nhân viên CSKH kiểm lại tay giảm từ 100% xuống mức kiểm mẫu 10%.
 
 ### Câu 3.3 · Một giả định về môi trường mà người thiết kế đã ngầm tin, nhưng nhiều khả năng sai ngoài thực tế
 
