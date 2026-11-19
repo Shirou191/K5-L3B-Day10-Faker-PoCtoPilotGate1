@@ -85,20 +85,51 @@ Học được: Thiết kế an toàn cho hệ thống AI phải kết hợp ch�
 
 Chưa chắc: Trong môi trường production thực tế, các dạng gian lận chia nhỏ giao dịch hoặc lạm dụng mã phê duyệt có thể biến thiên phức tạp hơn nhiều so với bộ dữ liệu giả lập (mock data).
 
-## HoVaTen-MSSV
+## BuiDinhQuyAnh-2A202603969
 
 ### Phần việc phụ trách
 
-Vai trong bàn; câu nào của đề, mục nào của phiếu A/B/C, file nào (`lab10/guards.py`, `config/operating_gates.json`, …).
+Vai **Vận hành và pháp lý**.
+- Khối 1: câu 1.2 (Phiếu A mục A1: mục tiêu nhìn từ chị Oanh và chị Hạnh), câu 1.4 (Phiếu A mục A2, cột Telemetry production).
+- Khối 2: câu 2.4 (Phiếu B mục B4 HAZOP vòng 1 trên `file_carrier_fault` + dòng ngoài kỹ thuật; mục B5 checklist 9 nhóm việc có PIC), câu 2.5
+  (mục B6 pre-mortem bốn lăng kính, cùng cả bàn), câu 2.10 (mục B7.5 runbook phần 1–3, mục B7.6 giờ cao điểm).
+- Khối 3: câu 3.1 phần riêng của thẻ (Phiếu C mục C3.4 hiệu chỉnh lòng tin + một dòng C3.1; mục C4 HAZOP của thẻ), câu 3.3 (mục C5),
+  câu 3.7 (mục C9 fault tree sau khi sửa, C10 risk register, C11 cập nhật checklist và runbook phần 4–5).
+- File: `config/operating_gates.json` (mục `operations`, `legal`), `templates/form-a-criteria.md`, `templates/form-b-evaluation-gates.md`,
+  `templates/form-c-incident.md`.
 
 ### Đóng góp cụ thể
 
-...
+- Đặt cổng con người, vận hành, pháp lý trong `config/operating_gates.json`: PIC `NV-TUNG`, người duyệt đứng tên `NV-HANH`, 1 người trực,
+  6 ca/giờ, chờ tối đa 60 phút, 5 điều kiện dừng, kênh báo tin; bật `decision_note`, kiểm mẫu 10%; chặn `recipient_contact`, `customer_note`
+  gửi cho hãng; ghi lỗi hãng phải có nguyên nhân trong tracking. Bộ nền vẫn đạt hết, không ca nào hỏng (Phiếu B mục B0 dòng 6).
+- Ba con số `decision_note`, kiểm mẫu 10%, `approver_id = NV-HANH` đặt từ vòng 1 (dựa trên B4 dòng "Người đứng tên duyệt" và B6 P6)
+  chính là 3/4 điều kiện để nhân viên thôi kiểm tay ở thẻ S8: khi Kỹ sư cổng lấp điều kiện thứ tư, kiểm lại giảm từ 100% về 10%
+  mà không phải đổi con số nào ở vòng 2.
+- HAZOP vòng 1 tìm ra ba nhánh chưa thấy trên trace (ghi lỗi nhầm kiện đầu tiên, nguyên nhân trống bị đổ cho hãng, lộ tên và SĐT người nhận quà);
+  HAZOP của thẻ thêm hai nhánh chưa thấy: mã phê duyệt do người không có thẩm quyền cấp (cổng hiện chưa kiểm `approver_id`)
+  và hàng chờ ngập khi REFUND-v4 hạ hạn mức tự động xuống 100.000đ từ 01/12.
+- Runbook 1–5: ai được bấm tắt, ngưỡng vàng/đỏ cho từng tín hiệu (khớp ngưỡng đã ký và chỉ số ở Phiếu C mục C8), dừng xong trong 15 phút,
+  giờ cao điểm 14 ca/giờ thì lên 2 người, cách báo cho chị Hạnh và cho hãng bị ghi lỗi sau sự cố S8.
+- Risk register 4 dòng sau sự cố (bảng `approvals` chậm cập nhật, chưa kiểm người đứng tên, REFUND-v4, ghi chú thiếu lý do), mỗi dòng có PIC,
+  dấu hiệu trong report hoặc `monitors.py` và quyết định nó làm đổi.
 
 ### Bằng chứng
 
-Mã commit, mã lần chạy (`runs/<mã>`), dòng trong phiếu.
+- Commit: `7caf328` (Phiếu A câu 1.2, 1.4), `653134a` (B4 HAZOP vòng 1), `4277a12` (B6 pre-mortem), `60b359b` (B5 checklist),
+  `c94817b` (B7.5 runbook 1–3, B7.6 giờ cao điểm, cổng `operations` và `legal`), `b8192df` (Phiếu C mục C3.4, C4, C5 câu 3.3, C9, C10, C11).
+- Lần chạy: bộ nền sau khi đặt cổng `operations`, `legal` (Phiếu B mục B0 dòng 6); prepared `runs/R-base-prepared-20261119-164242-adb4d3`;
+  S8 after `runs/R-S8-after-20261119-170659-5df4a6`; grade S8 trong bài nộp `R-S8-grade-20261119-173004-69c5f7` (PASS-VISIBLE).
+- Phiếu: A mục A1 (câu 1.2), A2 (câu 1.4); B mục B4, B5, B6, B7.5, B7.6; C mục C3.1 (một dòng), C3.4, C4, C5 (câu 3.3), C9, C10, C11.
+- Có dùng trợ lý AI để đọc code, đối chiếu dữ liệu `data/world.json` / gói thẻ với trace, và soát câu chữ trong phiếu; mọi con số
+  trong `operations`, `legal` và runbook do bàn chọn và giải thích được (`RULES.md`).
 
 ### Exit ticket
 
-Một điều học được, một điều còn chưa chắc.
+Học được: Phần lớn rủi ro của trợ lý không nằm ở model mà ở người và quy trình quanh nó. Ở thẻ S8, code chỉ sai ở 5/52 ticket nhưng cả ca
+CSKH mất lòng tin và kiểm tay 100%; con số và tên người đặt đúng từ trước (ghi chú, kiểm mẫu, người đứng tên) chỉ có tác dụng khi đi cùng
+một cổng code chặn đúng chỗ.
+
+Chưa chắc: Lòng tin của nhân viên ngoài đời có quay lại nhanh như trong lab (mock coi là bật/tắt tức thì) không, và bao lâu thì chị Hạnh
+thật sự chuyển từ kiểm tay sang kiểm mẫu 10%.
+
