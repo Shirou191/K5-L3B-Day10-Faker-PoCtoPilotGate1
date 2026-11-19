@@ -1,12 +1,14 @@
 {
-  "team": "",
-  "members": [],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "team": "K5-L3B-Day10-Faker-PoC-to-Pilot_Gate1_student",
+  "members": [
+    "PhanDaoMinhQuan-2A202603971"
+  ],
+  "incident": "S8",
+  "decision_v1": "Thu hẹp",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Thiết kế dựa vào giả định nhân viên duyệt sẽ tin trợ lý nếu phần lớn quyết định đúng, nhưng thẻ S8 cho thấy chỉ 5/52 ticket dùng mã phê duyệt sai (khoảng 10%) là cả ca CSKH chuyển sang kiểm tay 100%, vì người đứng tên phản ứng theo khoản sai tệ nhất chứ không theo tỉ lệ đúng; đi kèm là giả định mã phê duyệt hợp lệ về hình thức thì do đúng người duyệt cho đúng khoản, điều ngoài đời có thể sai.",
+    "reduce_or_prevent": "Cổng NGĂN được khoản trên hạn mức dùng mã phê duyệt sai về hình thức (đã dùng, hết hạn, thu hồi, thiếu max_vnd, của ticket/đơn khác) vì nó đọc thẳng bảng approvals trước lệnh ghi sổ cái (gói S8: hoàn sai 6.845.000đ -> 0, lỗi hãng oan 35 -> 0); nhưng chỉ GIẢM với việc chia nhỏ khoản hoàn (trần 300.000đ/khách/ngày vẫn lách được bằng nhiều tài khoản hoặc nhiều ngày) và với lòng tin của nhân viên (kiểm mẫu 10%, ghi chú quyết định), và không chặn được mã hợp lệ nhưng cấp sai.",
+    "measure_in_pilot": "Trong pilot thật cần đo lại: tỉ lệ CSKH kiểm tay thật theo ngày và mất bao lâu để về mức kiểm mẫu 10% (mock coi lòng tin là bật/tắt tức thì); tỉ lệ mã phê duyệt bị cổng chặn (invalid_approval_block_rate) và số khách có nhiều đơn trễ hợp lệ trong ngày bị trần 300.000đ chặn oan; hàng chờ người duyệt giờ cao điểm với 1 người 6 ca/giờ; và toàn bộ chỉ số sau 01/12 khi REFUND-v4 hạ hạn mức tự động xuống 100.000đ."
   }
 }

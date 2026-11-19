@@ -1,0 +1,34 @@
+{
+ "collected_at": "2026-11-19T17:32:55",
+ "incident": "S8",
+ "run_ids": {
+  "base": "R-S8-before-20261119-173005-69c5f7",
+  "prepared": "R-S8-prepared-20261119-173005-69c5f7",
+  "after": "R-S8-after-20261119-173005-69c5f7"
+ },
+ "grade_run_id": "R-S8-grade-20261119-173004-69c5f7",
+ "criteria_hash": "7401f6318f9672436aeca1f38c59c24da092dbab333a6b044fe064875917a651",
+ "round1_hash": "f838c08aa27861f83f5f68c7cc81a3c95b84d24dc03d77adc183861e3fc529f8",
+ "code_hash": "69c5f7f303db8cc37f65c110b2ffe4f580b5a46852574c6e4bbfadffccc2813c",
+ "files": {
+  "code/guards.py": "732783c512917b62e289cabb8d4dd867832e5f1af5c10354ec7d54e9b49d7c1c",
+  "code/guards_round1.py": "5148d3ba664c7d69afe0253beb1da074ce144c6022a0e6a1f39aa4d7d0552eee",
+  "code/monitors.py": "a607571a5bc262a4dafd261c53a4630b5190472deadd7661f7df6404dbd97a13",
+  "config/acceptance_criteria.json": "7401f6318f9672436aeca1f38c59c24da092dbab333a6b044fe064875917a651",
+  "config/acceptance_criteria.lock": "15663a4529d561033e4a52afb23781e3cdd93630b24a9bbe709047a82756d869",
+  "config/operating_gates.json": "ce509cb32112e6b0796edbb915e9d540303e7003e3045c13d5ec48701e071cb1",
+  "config/operating_gates.round1.json": "c2c30189d061215134fdad8930390c5ecdde11aa3fb02a9d713f2bb37501d91a",
+  "config/round1.lock": "5009df5dc93c3ff884d71cea902ea9034fdca57649cd4eeb003c37afc6bafa1d",
+  "config/switches.json": "9fcdb809437346392c6ded442f4f562c357ef89a7688a454505f94bcd969866b",
+  "docs/form-a-criteria.md": "64c8d88f97748d93ed97767b0f989597d7ef95b6af08d3cc10f5bc988806109f",
+  "docs/form-b-evaluation-gates.md": "b8f69f937c836f09c51b799a4ce59833cfac9d2d8b449b7deca81a86944483ae",
+  "docs/form-c-incident.md": "8c4b0192753584c379c7e0806fb5547e566c50394d68adafd47b4fb22e716db5",
+  "runs/grade-report.json": "4f6e57671484c5b454f9c6065875b95e61542b4136474f93723fa871a29f896c",
+  "runs/grade-report.md": "b7b74cf547898ed426413d1713c1a2f3d463734c9b6e72600d509cb1bb4ece42",
+  "runs/journal.jsonl": "e22d8f6231e1f0c84bc0575dd0c4733fded8bb6c0afbb0e444da421dd6188292",
+  "runs/R-S8-after-20261119-173005-69c5f7/report.json": "eac4628c899d3fbed26d1e13695f7194e8c1787fbcdbd0565cb58f0a0119b39f",
+  "runs/R-S8-before-20261119-173005-69c5f7/report.json": "3c50bfee0d2d1593688078bf44246639886837ad30da067db526bc5f0d0a1eb0",
+  "runs/R-S8-prepared-20261119-173005-69c5f7/report.json": "6f0d24d1f7572192aae468a3e746391e4c33d31354d6a2429e99a88a3a0eee6a",
+  "submission.json": "e5f0a1ab54f27f6b785a82ba069f5ab52386a7d24aecef23d62feb5dad51c09b"
+ }
+}
