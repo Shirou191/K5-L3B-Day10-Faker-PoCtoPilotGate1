@@ -1,6 +1,6 @@
 # Phiếu A · Tiêu chí và cách đo · Khối 1 (phút 15–65)
 
-**Bàn:** Faker · **Người cầm bút chính:** vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
+**Bàn:** K5-L3B-Day10-Faker-PoC-to-Pilot_Gate1_student · **Người cầm bút chính:** vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
 
 Điền phiếu này **trước khi chạy trợ lý lần nào**. Viết xong thì chép ngưỡng sang `config/acceptance_criteria.json`, ký ở phút 60–65,
 rồi mới chạy đánh giá. Khối 1 không sửa code.
@@ -154,8 +154,8 @@ git add config/acceptance_criteria.json config/acceptance_criteria.lock && git c
 
 | Mục | Điền |
 |---|---|
-| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) | |
-| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`) | |
-| Đã push lên `origin main` thành công? | có / chưa |
+| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) |2026-11-19T15:27:09 |
+| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`) |4298603 |
+| Đã push lên `origin main` thành công? | có  |
 
 Sau bước này **không sửa** `config/acceptance_criteria.json`, kể cả mở rồi lưu lại bằng trình soạn thảo tự định dạng.
