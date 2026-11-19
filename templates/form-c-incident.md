@@ -34,6 +34,7 @@ Mỗi lệnh `lab10.eval` và `lab10.grade` tự ghi một dòng vào `runs/jour
 | 1 | `R-S8-prepared-20261119-165403-b14b21` (trong grade `R-S8-grade-20261119-165402-b14b21`) | S8 · prepared | nhận thẻ đã bốc, chưa sửa thêm (đúng cổng vòng 1 đã chốt) | 0.8654 [0.7692; 0.9423] | 0.8654 | 6.845.000 · 35 · 0 | 0.0 (vào hàng chờ 100%) | Prepared **giống hệt base**: cổng vòng 1 không đỡ được ô nào; 7 ticket hỏng (`S8-01`, `02`, `03`, `04`, `06`, `43`, `44`), 36 ca ùn, ROI −2,44. |
 | 2 | `R-S8-after-20261119-170650-2137aa` | S8 · after | `write_gate` `issue_refund`: khoản trên hạn mức tự động phải có phê duyệt còn giá trị (đúng ticket, đúng đơn, `valid`, chưa hết hạn, `max_vnd` đủ), sai thì `escalate` | 0.9615 [0.9038; 1.0] | 0.9615 | 1.080.000 · 10 · 0 | 0.0962 (vào hàng chờ 0,1731) | 5 ticket dùng mã sai hết hỏng; niềm tin của CSKH đạt nên kiểm tay 100% → kiểm mẫu 10%: 9 ca/ngày vào hàng chờ, 0 ca ùn, chờ lâu nhất 4 phút, 2.575đ/ticket, ROI 1,27. Còn hỏng `S8-43`, `S8-44` (vượt trần mỗi khách). |
 | 3 | `R-S8-after-20261119-170659-5df4a6` | S8 · after | + nhánh trần hoàn tự động 300.000đ/khách/ngày (`ops_limits.max_auto_refund_per_customer_per_day_vnd`), vượt thì `escalate` | 1.0 [1.0; 1.0] | 1.0 | 0 · 0 · 0 | 0.1346 (vào hàng chờ 0,2115) | Gói S8 sạch: 0 hoàn sai, 0 lỗi oan, 11 ca/ngày vào hàng chờ, 0 ca ùn, chờ lâu nhất 5 phút, 2.952đ/ticket, ROI 2,39, không vượt trần. *(Lần chạy `R-S8-after-20261119-170622-5df4a6` trước đó bật cả hai nhánh cùng lúc, cùng kết quả; dòng 2–3 tách ra để mỗi lần chỉ đổi một thứ.)* |
+| 5 | `R-S8-after-20261119-170926-f6fff4` | S8 · after | thêm 2 chỉ số theo dõi trong `lab10/monitors.py` (không đổi cổng, không đổi config) | 1.0 [1.0; 1.0] | 1.0 | 0 · 0 · 0 | 0.1346 | Số đo giữ nguyên dòng 3; `invalid_approval_block_rate` 0,0962. Grade `R-S8-grade-20261119-171014-69c5f7`: **PASS-VISIBLE**, 6 kiểm đều ✅ (integrity, criteria, visible, regression, monitor; hidden do team chấm chạy). |
 | 4 | `R-base-after-20261119-170700-5df4a6` | base · after | (kiểm không regression) | 1.0 [1.0; 1.0] | 1.0 | 0 · 0 · 0 | 0.2273 | Bộ nền giữ nguyên như mốc prepared: không ca nào hỏng. Grade `R-S8-grade-20261119-170631-5df4a6`: integrity ✅ · visible ✅ · regression ✅ · monitor ❌ (chưa có chỉ số mới, làm ở C8). |
 
 ---
@@ -341,16 +342,21 @@ và **người** (nhánh [3]) đã đặt từ vòng 1 nhưng chỉ phát huy kh
 Thêm **ít nhất một hàm** trong `lab10/monitors.py` và đăng ký vào `MONITORS`. Chỉ số `escalation_rate` có sẵn không tính là chỉ số mới.
 Thẻ S5 dùng mục này cho một con số kinh doanh: chi phí mỗi ticket theo kho (tách tiền máy, công người, tiền mất).
 
-| | Chỉ số theo dõi mới của bàn |
-|---|---|
-| **Tên trong `MONITORS`** | |
-| **Bước / hành vi được đo** | |
-| **Thước đo** (một câu, có đơn vị) | |
-| **Dữ liệu** (trường nào của trial, không có nhãn) | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | |
-| **Khung thời gian / ngưỡng báo động** | |
-| **Điểm mù** (chỉ số này KHÔNG thấy gì) | |
-| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | |
+Bàn thêm **hai** chỉ số (`lab10/monitors.py`), mỗi chỉ số ứng với một nhánh kỹ thuật của fault tree: chỉ số 1 không phụ thuộc cổng của bàn
+(đọc thẳng sổ cái, bắt được lỗi ngay ở mốc base); chỉ số 2 đọc sự kiện của cổng (cho biết cổng đang chặn bao nhiêu).
+
+| | Chỉ số 1 (nhánh [2]) | Chỉ số 2 (nhánh [1]) |
+|---|---|---|
+| **Tên trong `MONITORS`** | `customer_auto_refund_cap_breaches` | `invalid_approval_block_rate` |
+| **Bước / hành vi được đo** | Lệnh ghi `issue_refund` tự động (không có phê duyệt), cộng theo khách trong một ngày | Bước 5 "phê duyệt cho khoản lớn": lệnh `issue_refund` trên hạn mức bị cổng chặn vì mã phê duyệt không còn giá trị |
+| **Thước đo** (một câu, có đơn vị) | Số cặp (ngày, khách) có tổng hoàn tự động vượt trần 300.000đ/khách/ngày, tính trung bình mỗi seed (cặp/ngày) | Tỉ lệ ticket có lệnh hoàn bị cổng chuyển người vì phê duyệt không hợp lệ (%) |
+| **Dữ liệu** (trường nào của trial, không có nhãn) | `trial["ledger"]` (các dòng sổ cái ticket đó ghi: `customer_id`, `amount_vnd`, `approval_id`), `trial["day"]`, `trial["seed"]`; trần lấy từ `data/world.json` → `ops_limits.max_auto_refund_per_customer_per_day_vnd` | `trial["events"]`: sự kiện `{"type": "gate", "tool": "issue_refund", "action": "escalate", "reason": "… phê duyệt không hợp lệ: …"}` do `write_gate` ghi |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | Cộng `amount_vnd` các dòng **không** có `approval_id` theo khoá (seed, day, customer_id); đếm khoá có tổng > trần; chia cho số seed khác nhau. Trial không có dòng sổ cái thì không cộng gì; không đọc được trần thì dùng 300.000đ. | Số trial có ít nhất một sự kiện như trên / tổng số trial; mẫu số 0 thì trả 0. Một ticket bị chặn nhiều lần chỉ đếm một. |
+| **Khung thời gian / ngưỡng báo động** | Tính lại mỗi giờ trên ngày hiện tại. **Đỏ: ≥ 1** (có khách vượt trần mà vẫn được hoàn tự động, tức cổng trần không chạy hoặc bị lách) → tắt `issue_refund`, báo NV-TUNG và NV-OANH. Sau khi sửa, giá trị đúng phải là 0. | Tính mỗi ngày. **Vàng: > 5%** ticket → gửi chị Hạnh danh sách mã bị chặn để rà cách cấp, thu hồi mã. **Đỏ: tăng gấp đôi so với tuần trước** → có thể có người dùng lại mã cũ có chủ đích; NV-OANH đối soát. |
+| **Điểm mù** (chỉ số này KHÔNG thấy gì) | Không thấy người chia ra **nhiều tài khoản khách** hoặc **nhiều ngày**; không thấy khoản hoàn có phê duyệt (đã loại khỏi phép cộng); dòng sổ cái từ trước hôm nay không có trong trial nên không cộng. | Phụ thuộc cổng của bàn: cổng sai hoặc tắt thì chỉ số về 0 dù lỗi vẫn xảy ra (dùng cùng chỉ số 1 và dòng "Niềm tin của nhân viên duyệt" để đối chiếu). Không thấy mã **hợp lệ về hình thức nhưng cấp sai**. |
+| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | Mốc **before**: bộ nền **0,0** · thẻ S8 **1,0** (khách C-16, 386.000đ) → sáng đèn. Mốc after: 0,0 · 0,0 (cổng trần đã chặn). | Mốc before: 0,0 · 0,0 (chưa có cổng). Mốc **after**: bộ nền **0,0** · thẻ S8 **0,0962** (5/52 ticket: `S8-01`, `02`, `03`, `04`, `06`) → sáng đèn. |
+
+Grade `R-S8-grade-20261119-171014-69c5f7` (chạy lại trên code cuối, hash `69c5f7f303db`; lần `…170926-f6fff4` trước đó cùng kết quả): `6 monitor ✅`, kết luận **PASS-VISIBLE** (chưa chạy test ẩn).
 
 ---
 
