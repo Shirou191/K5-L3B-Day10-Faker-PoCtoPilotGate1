@@ -58,7 +58,7 @@ python3 -m lab10.grade --incident Sx
 - Sự cố trên thẻ thuộc lăng kính nào (kỹ thuật, kinh doanh, con người và vận hành, pháp lý)? **Con người và vận hành** là chính (CSKH thôi tin, kiểm tay 100%, hàng chờ ùn), gốc ở **kỹ thuật** (trợ lý dùng mã phê duyệt không hợp lệ: của ticket khác, hết hạn, đã thu hồi, vượt `max_vnd`), hệ quả ở **kinh doanh** (chi phí > làm tay, ROI âm) và **pháp lý** (35 lỗi ghi cho hãng theo các khoản hoàn lẽ ra phải chuyển người; trưởng ca đứng tên khoản mình không duyệt).
 - Có nằm trong các lý do bàn đã viết không? Nếu có: cổng vòng 1 đã đỡ được bao nhiêu (đọc cột prepared trong report)? Nếu không: vì sao cả bàn không nghĩ tới? **Có, một phần.** B6 **P6** ("nhân viên CSKH không tin trợ lý nên tự kiểm lại tay 100% … trợ lý dùng mã phê duyệt cũ A-0031 đứng tên chị Hạnh là mất lòng tin hẳn") và B4 dòng ngoài kỹ thuật "Người đứng tên duyệt · INVALID". Nhưng P6 **không được chọn làm cổng ★**: bàn chỉ đặt các con số trong config (B7.5), và để "kiểm phê duyệt không hợp lệ" ở ô **Chưa** (B5 dòng 4, Risk register). Cột prepared cho thấy cổng vòng 1 đỡ được **0**: điều kiện tin của nhân viên là "đủ cả bốn hoặc không", thiếu một điều kiện kỹ thuật thì ba con số config không có tác dụng.
 
-*Ghi chú về thứ tự: commit `899a640 Nhận thẻ S8` nằm trước commit chốt vòng 1 `e08eb26` (checkpoint `f838c08a`). Bàn xác nhận: nội dung thẻ ________ (có / không) được đọc trước khi chốt.*
+
 - Lý do còn thiếu, thêm bây giờ:
 
 | Lý do thất bại (viết ở thì quá khứ) | Lăng kính | Kiểm được bằng gì (trace / data / config nào) |
