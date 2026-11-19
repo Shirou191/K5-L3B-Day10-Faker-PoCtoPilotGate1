@@ -48,12 +48,12 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 
 | | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
 |---|---|---|
-| **Bước / hành vi được đo** | | |
-| **Thước đo** (một câu, có đơn vị) | | |
-| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
+| **Bước / hành vi được đo** |Bước 3, chọn chính sách hoàn tiền: agent lấy phiên bản chính sách nào để tính tiền và quyết định có ghi lỗi hãng hay không. | |
+| **Thước đo** (một câu, có đơn vị) |Tỉ lệ lần chạy dùng sai phiên bản chính sách (%): số lần chạy mà policy_id agent dùng khác phiên bản có hiệu lực vào ngày xử lý, chia cho số lần chạy tới bước chọn chính sách. | |
+| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) |(1) Sự kiện policy.policy_id trong trace của từng lần chạy (runs/<mã lần chạy>/), bộ nền 22 ticket × 5 seed = 110 lần chạy. (2) Nhãn đúng không cần người gán: tính từ nguồn sự thật data/world.json → policies[].effective_from/effective_to và as_of, bằng hàm helpers.effective_policy(policies, as_of). (3) Người soát nhãn: vai Sản phẩm và kinh doanh đối chiếu bảng chính sách với văn bản chính sách của Ops/Finance mỗi khi có phiên bản mới. | |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) |sai_chính_sách = #{lần chạy có sự kiện policy và policy_id ≠ effective_policy(as_of).policy_id} / #{lần chạy có sự kiện policy}. Lần chạy dừng trước bước 3 (chuyển người vì không tìm thấy đơn, sai chủ đơn, ý định khác, đơn đã hoàn) bị loại khỏi mẫu số và đếm riêng. Nếu effective_policy trả về None (không phiên bản nào phủ ngày đó), tính lần chạy là sai và ghi riêng là "khoảng trống chính sách". Lần chạy có pinned = true (chính sách bị pre_guard ghim) vẫn tính bình thường. | |
 | **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
-| **Điểm mù** (thước đo này KHÔNG thấy gì) | | |
+| **Điểm mù** (thước đo này KHÔNG thấy gì) |(1) Không thấy khi chính bảng chính sách sai, ví dụ nhập sai ngày hiệu lực hoặc sai bonus_cap_vnd, vì nhãn cũng lấy từ bảng đó. (2) Không thấy khi agent chọn đúng chính sách nhưng dùng sai độ trễ hoặc sai nguyên nhân, nên số tiền vẫn sai. (3) Với bộ nền hiện tại, kết quả có thể là 0% chỉ vì hôm nay cờ trùng với ngày hiệu lực; thước đo chỉ lộ lỗi khi chạy với as_of sau 2026-12-01. | |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
